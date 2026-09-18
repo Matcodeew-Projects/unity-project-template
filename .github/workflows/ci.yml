@@ -1,0 +1,23 @@
+name: Unity CI
+
+on:
+  push:
+    branches:
+      - dev
+
+  pull_request:
+    branches:
+      - dev
+      - main
+
+jobs:
+  validation:
+    name: Basic validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: CI test
+        run: echo "CI is working!"
