@@ -20,4 +20,4 @@ jobs:
         uses: actions/checkout@v4
 
       - name: CI test
-        run: echo "CI is working!"
+        run:  echo "CI is working!"
