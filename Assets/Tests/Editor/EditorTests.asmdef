@@ -1,5 +1,5 @@
 {
-    "name": "PlayModeTests",
+    "name": "EditorTests",
     "optionalUnityReferences": [
         "TestAssemblies"
     ]
