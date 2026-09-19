@@ -7,6 +7,6 @@ public class GridTests
     {
         int width = 10;
 
-        Assert.AreEqual(10, width);
+        Assert.AreEqual(10, width); 
     }
 }
