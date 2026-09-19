@@ -1,10 +1,6 @@
 name: Unity CI
 
 on:
-  push:
-    branches:
-      - dev
-
   pull_request:
     branches:
       - dev
@@ -15,16 +11,6 @@ permissions:
   checks: write
 
 jobs:
-  validation:
-    name: Basic validation
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: CI test
-        run:  echo "CI is working!"
 
   editmode-tests:
     name: Unity EditMode Tests
