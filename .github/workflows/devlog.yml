@@ -1,0 +1,208 @@
+name: Generate Devlog
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "Version being released"
+        required: true
+        type: string
+
+      previous_tag:
+        description: "Previous release tag"
+        required: false
+        type: string
+
+    outputs:
+      artifact_name:
+        description: "Name of the generated devlog artifact"
+        value: ${{ jobs.devlog.outputs.artifact_name }}
+
+jobs:
+  devlog:
+    name: Generate Devlog
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    outputs:
+      artifact_name: ${{ steps.output.outputs.artifact_name }}
+
+    steps:
+      # ─────────────────────────────────────────────
+      # Repository
+      # ─────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ─────────────────────────────────────────────
+      # Generate changelog
+      # ─────────────────────────────────────────────
+      - name: Generate devlog
+        shell: bash
+        env:
+          VERSION: ${{ inputs.version }}
+          PREVIOUS_TAG: ${{ inputs.previous_tag }}
+        run: |
+          echo "# Release ${VERSION}" > DEVLOG.md
+          echo "" >> DEVLOG.md
+
+          # If there is no previous release, use the entire Git history.
+          if [ -z "$PREVIOUS_TAG" ]; then
+            RANGE="HEAD"
+          else
+            RANGE="${PREVIOUS_TAG}..HEAD"
+          fi
+
+          COMMITS=$(git log "$RANGE" --pretty=format:"%s")
+
+          # ─────────────────────────────────────────
+          # Features
+          # ─────────────────────────────────────────
+
+          FEATURES=$(echo "$COMMITS" | grep -E "^feat(\(.+\))?:" || true)
+
+          if [ -n "$FEATURES" ]; then
+            echo "## New Features" >> DEVLOG.md
+            echo "" >> DEVLOG.md
+
+            echo "$FEATURES" |
+            sed -E 's/^feat(\([^)]+\))?:[[:space:]]*/- /' \
+              >> DEVLOG.md
+
+            echo "" >> DEVLOG.md
+          fi
+
+          # ─────────────────────────────────────────
+          # Fixes
+          # ─────────────────────────────────────────
+
+          FIXES=$(echo "$COMMITS" | grep -E "^fix(\(.+\))?:" || true)
+
+          if [ -n "$FIXES" ]; then
+            echo "## Fixes" >> DEVLOG.md
+            echo "" >> DEVLOG.md
+
+            echo "$FIXES" |
+            sed -E 's/^fix(\([^)]+\))?:[[:space:]]*/- /' \
+              >> DEVLOG.md
+
+            echo "" >> DEVLOG.md
+          fi
+
+          # ─────────────────────────────────────────
+          # Performance
+          # ─────────────────────────────────────────
+
+          PERF=$(echo "$COMMITS" | grep -E "^perf(\(.+\))?:" || true)
+
+          if [ -n "$PERF" ]; then
+            echo "## Performance" >> DEVLOG.md
+            echo "" >> DEVLOG.md
+
+            echo "$PERF" |
+            sed -E 's/^perf(\([^)]+\))?:[[:space:]]*/- /' \
+              >> DEVLOG.md
+
+            echo "" >> DEVLOG.md
+          fi
+
+          # ─────────────────────────────────────────
+          # Refactoring
+          # ─────────────────────────────────────────
+
+          REFACTOR=$(echo "$COMMITS" | grep -E "^refactor(\(.+\))?:" || true)
+
+          if [ -n "$REFACTOR" ]; then
+            echo "## Improvements" >> DEVLOG.md
+            echo "" >> DEVLOG.md
+
+            echo "$REFACTOR" |
+            sed -E 's/^refactor(\([^)]+\))?:[[:space:]]*/- /' \
+              >> DEVLOG.md
+
+            echo "" >> DEVLOG.md
+          fi
+
+          # ─────────────────────────────────────────
+          # Documentation
+          # ─────────────────────────────────────────
+
+          DOCS=$(echo "$COMMITS" | grep -E "^docs(\(.+\))?:" || true)
+
+          if [ -n "$DOCS" ]; then
+            echo "## Documentation" >> DEVLOG.md
+            echo "" >> DEVLOG.md
+
+            echo "$DOCS" |
+            sed -E 's/^docs(\([^)]+\))?:[[:space:]]*/- /' \
+              >> DEVLOG.md
+
+            echo "" >> DEVLOG.md
+          fi
+
+          # ─────────────────────────────────────────
+          # Tests
+          # ─────────────────────────────────────────
+
+          TESTS=$(echo "$COMMITS" | grep -E "^test(\(.+\))?:" || true)
+
+          if [ -n "$TESTS" ]; then
+            echo "## Tests" >> DEVLOG.md
+            echo "" >> DEVLOG.md
+
+            echo "$TESTS" |
+            sed -E 's/^test(\([^)]+\))?:[[:space:]]*/- /' \
+              >> DEVLOG.md
+
+            echo "" >> DEVLOG.md
+          fi
+
+          # ─────────────────────────────────────────
+          # CI / Build
+          # ─────────────────────────────────────────
+
+          TECHNICAL=$(echo "$COMMITS" | grep -E "^(ci|build)(\(.+\))?:" || true)
+
+          if [ -n "$TECHNICAL" ]; then
+            echo "## Technical Changes" >> DEVLOG.md
+            echo "" >> DEVLOG.md
+
+            echo "$TECHNICAL" |
+            sed -E 's/^(ci|build)(\([^)]+\))?:[[:space:]]*/- /' \
+              >> DEVLOG.md
+
+            echo "" >> DEVLOG.md
+          fi
+
+          # ─────────────────────────────────────────
+          # Release metadata
+          # ─────────────────────────────────────────
+
+          echo "---" >> DEVLOG.md
+          echo "" >> DEVLOG.md
+          echo "**Version:** ${VERSION}" >> DEVLOG.md
+          echo "" >> DEVLOG.md
+          echo "**Commit:** ${GITHUB_SHA:0:7}" >> DEVLOG.md
+
+          echo ""
+          echo "Generated devlog:"
+          cat DEVLOG.md
+
+      # ─────────────────────────────────────────────
+      # Upload devlog for other workflows/jobs
+      # ─────────────────────────────────────────────
+      - name: Upload devlog
+        uses: actions/upload-artifact@v4
+        with:
+          name: devlog-${{ inputs.version }}
+          path: DEVLOG.md
+          retention-days: 7
+
+      - name: Set output
+        id: output
+        run: |
+          echo "artifact_name=devlog-${{ inputs.version }}" >> "$GITHUB_OUTPUT"
