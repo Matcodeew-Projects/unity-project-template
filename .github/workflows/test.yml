@@ -6,6 +6,8 @@ on:
       - dev
       - main
 
+  workflow_dispatch:
+
 permissions:
   contents: read
   checks: write
@@ -17,7 +19,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Run EditMode Tests
         uses: game-ci/unity-test-runner@v4
@@ -30,13 +33,16 @@ jobs:
           testMode: editmode
           githubToken: ${{ secrets.GITHUB_TOKEN }}
 
+
   playmode-tests:
     name: Unity PlayMode Tests
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Run PlayMode tests
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run PlayMode Tests
         uses: game-ci/unity-test-runner@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
@@ -44,7 +50,6 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           projectPath: .
-          testMode: PlayMode
+          testMode: playmode
           coverageEnabled: false
           githubToken: ${{ secrets.GITHUB_TOKEN }}
-       
