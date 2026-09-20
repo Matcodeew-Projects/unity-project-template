@@ -36,8 +36,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Run PlayMode Tests
+      - name: Run PlayMode tests
         uses: game-ci/unity-test-runner@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
@@ -45,6 +44,7 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           projectPath: .
-          testMode: playmode
+          testMode: PlayMode
+          coverageEnabled: false
           githubToken: ${{ secrets.GITHUB_TOKEN }}
-        
+       
