@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    uses: Matcodeew-Projects/git-workflows/.github/workflows/unity-build.yml@main
+    uses: Matcodeew-Projects/Git-Workflows/.github/workflows/unity-build.yml@main
     with:
       targetPlatform: StandaloneWindows64
       buildName: UnityProject
