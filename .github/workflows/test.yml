@@ -16,5 +16,5 @@ jobs:
 
   playmode:
     name: PlayMode Tests
-    uses: Matcodeew-Projects/Git-workflows/.github/workflows/unity-playmode-tests.yml@main
+    uses: Matcodeew-Projects/Git-Workflows/.github/workflows/unity-playmode-tests.yml@main
     secrets: inherit
