@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     name: Build
-    uses: Matcodeew-Projects/git-workflows/.github/workflows/unity-build.yml@main
+    uses: Matcodeew-Projects/Git-workflows/.github/workflows/unity-build.yml@main
     with:
       targetPlatform: StandaloneWindows64
       buildName: UnityProject
@@ -19,7 +19,7 @@ jobs:
 
   devlog:
     name: Devlog
-    uses: Matcodeew-Projects/git-workflows/.github/workflows/devlog.yml@main
+    uses: Matcodeew-Projects/Git-workflows/.github/workflows/devlog.yml@main
     with:
       outputFile: release-notes.md
 
@@ -29,7 +29,7 @@ jobs:
       - build
       - devlog
 
-    uses: Matcodeew-Projects/git-workflows/.github/workflows/release.yml@main
+    uses: Matcodeew-Projects/Git-workflows/.github/workflows/release.yml@main
 
     with:
       artifactName: StandaloneWindows64-Build

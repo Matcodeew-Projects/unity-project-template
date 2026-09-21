@@ -11,10 +11,10 @@ on:
 jobs:
   editmode:
     name: EditMode Tests
-    uses: Matcodeew-Projects/git-workflows/.github/workflows/unity-editmode-tests.yml@main
+    uses: Matcodeew-Projects/Git-Workflows/.github/workflows/unity-editmode-tests.yml@main
     secrets: inherit
 
   playmode:
     name: PlayMode Tests
-    uses: Matcodeew-Projects/git-workflows/.github/workflows/unity-playmode-tests.yml@main
+    uses: Matcodeew-Projects/Git-workflows/.github/workflows/unity-playmode-tests.yml@main
     secrets: inherit
