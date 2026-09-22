@@ -48,7 +48,7 @@ jobs:
       nextTag: ${{ needs.version.outputs.nextTag }}
 
   # ------------------------------
-  # Release
+  # GitHub Release
   # ------------------------------
 
   release:
@@ -64,5 +64,27 @@ jobs:
     with:
       artifactName: StandaloneWindows64-Build
       nextTag: ${{ needs.version.outputs.nextTag }}
+
+    secrets: inherit
+
+  # ------------------------------
+  # itch.io
+  # ------------------------------
+
+  itch:
+    name: Publish to itch.io
+
+    needs:
+      - version
+      - build
+      - release
+
+    uses: Matcodeew-Projects/Git-workflows/.github/workflows/itch-publish.yml@main
+
+    with:
+      project: ${{ vars.ITCHIO_PROJECT }}
+      channel: windows
+      version: ${{ needs.version.outputs.nextTag }}
+      artifactName: StandaloneWindows64-Build
 
     secrets: inherit
