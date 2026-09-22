@@ -25,6 +25,7 @@ jobs:
 
   release:
     name: Release
+
     needs:
       - build
       - devlog
